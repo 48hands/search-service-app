@@ -1,0 +1,80 @@
+# For a quick start check out our HTTP Requests collection (Tools|HTTP Client|Open HTTP Requests Collection).
+#
+# Following HTTP Request Live Templates are available:
+# * 'gtrp' and 'gtr' create a GET request with or without query parameters;
+# * 'ptr' and 'ptrp' create a POST request with a simple or parameter-like body;
+# * 'mptr' and 'fptr' create a POST request to submit a form with a text or file field (multipart/form-data);
+
+
+### Send POST request with json body
+POST http://localhost:9001/generate_dummies
+Content-Type: application/json
+
+{
+  "records": 40000,
+  "date": "20180101"
+}
+
+
+### Send POST request with json body
+POST http://localhost:9001/generate_dummies
+Content-Type: application/json
+
+{
+  "records": 40000,
+  "date": "20180102"
+}
+
+
+### Send POST request with json body
+POST http://localhost:9001/generate_dummies
+Content-Type: application/json
+
+{
+  "records": 40000,
+  "date": "20180103"
+}
+
+
+### Send POST request with json body
+POST http://localhost:9001/generate_dummies
+Content-Type: application/json
+
+{
+  "records": 40000,
+  "date": "20180104"
+}
+
+
+### Send POST request with json body
+POST http://localhost:9001/generate_dummies
+Content-Type: application/json
+
+{
+  "records": 40000,
+  "date": "20180105"
+}
+
+
+### Send POST request with json body
+POST http://localhost:9001/generate_dummies
+Content-Type: application/json
+
+{
+  "records": 40000,
+  "date": "20180106"
+}
+
+
+### Send POST request with json body
+POST http://localhost:9001/generate_dummies
+Content-Type: application/json
+
+{
+  "records": 40000,
+  "date": "20180107"
+}
+###
+GET http://localhost:9001/fetch_dummies
+
+###

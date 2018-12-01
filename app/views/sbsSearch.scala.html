@@ -1,0 +1,27 @@
+@(form: Form[SearchForm])(implicit messages: Messages, request: RequestHeader)
+
+
+@app(Messages("SubscriberRelationSearchFunc")) {
+
+    <div class="container">
+        <div class="row">
+            <h3 id="inline-form" class="page-header" style="margin-top: 20px">@Messages("加入者コードリスト紐づけ検索")</h3>
+            <div class="col-md-12" style="font-size: 14px">
+
+
+            @b4.vertical.form(routes.HistorySearchController.sbsUploadAndSearch) { implicit vfc =>
+                @b4.datepicker(form("dateStart"), 'value -> "15-11-2018", '_help -> "検索期間を入力してください。")(form("dateEnd"), 'value -> "31-12-2018")('_label -> "検索年月")
+
+                @b4.file(form("foo"),
+                    '_label -> "加入者コードリスト(*.csv)",
+                    'placeholder -> "Select a file...",
+                    '_help -> "加入者コードに紐づく応対履歴を取得します。加入者コードリストをアップロードしてください。",
+                    '_custom -> true)
+                @b4.submit('class -> "btn btn-secondary") {
+                    <i class="fa fa-ok"></i>検索依頼 }
+            }
+            </div>
+        </div>
+    </div>
+
+}

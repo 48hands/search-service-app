@@ -1,0 +1,243 @@
+@(messageSeq: Seq[ReceptionHistoryRecord], form: Form[SearchForm])(implicit messages: Messages, request: RequestHeader)
+
+    @fruits = @{
+        Seq("ALL" -> "---",
+            "A" -> "Apples",
+            "P" -> "Pears",
+            "B" -> "Bananas")
+    }
+
+    @ages = @{
+        Seq("ALL" -> "---",
+            "00" -> "0代",
+            "01" -> "10代",
+            "02" -> "20代",
+            "03" -> "30代",
+            "04" -> "40代",
+            "05" -> "50代",
+            "06" -> "60代",
+            "07" -> "70代",
+            "08" -> "80代",
+            "09" -> "90代"
+        )
+    }
+
+    @searchConditions = @{
+        Seq("00" -> "---",
+            "01" -> "案件名)検索条件その1",
+            "02" -> "案件名)検索条件その2",
+            "03" -> "案件名)検索条件その3",
+            "04" -> "案件名)検索条件その4",
+            "04" -> "案件名)検索条件その5",
+            "05" -> "案件名)検索条件その6",
+            "06" -> "案件名)検索条件その7",
+            "07" -> "案件名)検索条件その8",
+            "08" -> "案件名)検索条件その9",
+            "09" -> "案件名)検索条件その10"
+        )
+    }
+
+    @dictionary = @{
+        Map(
+            "#名寄せ前" -> "名寄せ後",
+            "えーゆー" -> "英雄",
+            "クレカ" -> "クレジットカード",
+            "ながくら" -> "おとこ",
+            "くれーむ" -> "クレーム"
+        )
+    }
+
+    @dictionaryContent = @{
+        dictionary.map(m => s"${m._1},${m._2}").mkString("\n")
+    }
+
+    @dictionarySize = @{
+        dictionary.size
+    }
+
+
+    @app(Messages("HistorySearchFunc")) {
+        <script >
+            $(function () {
+                $("#searchCondition").on('change', function () {
+
+                    $.ajax("@routes.HistorySearchController.getSearchCondition(1000)",
+                            {
+                                type: "get"
+                            }
+                    ).done(function (json) {
+                        $("#dateStart").val(json.dateStart);
+                        $("#dateEnd").val(json.dateEnd);
+                        $("#keyword").val(json.keyword);
+                        $("#male").prop('checked', json.male);
+                        $("#female").prop('checked', json.female);
+                        $("#company").prop('checked', json.company);
+
+                        $("#au").prop('checked', true);
+                        $("#bbc").prop('checked', true);
+                        $("#demand").prop('checked', true);
+
+                        $("#age").val("06");
+                        $("#receptionCode").val("A");
+                        $("#model").val("P");
+
+                    }).fail(function () {
+                        window.alert('Error!');
+                    });
+                });
+            });
+        </script>
+
+        <div class="container">
+            <div class="row">
+                <h3 id="inline-form" class="page-header" style="padding-top: 20px">@Messages("検索条件")</h3>
+                <div class="col-md-12" style="font-size: 14px">
+                    @b4.horizontal.form(routes.HistorySearchController.index, "col-md-2", "col-md-10") { implicit vfc =>
+
+                        @b4.select(form("searchCondition"), options = searchConditions, '_label -> "検索条件保存リスト", '_help -> "保存済みの検索条件を利用したい場合に洗濯してください。")
+
+                        @b4.multiCheckbox(
+                            (form("au"), Seq('_text -> "au応対履歴")),
+                            (form("bbc"), Seq('_text -> "BBC応対履歴")),
+                            (form("demands"), Seq('_text -> "お客様の声"))
+                        )('_label -> "検索対象", 'class -> "multi-checkbox-list inline", '_help -> "検索対象を設定してください。")
+
+                        @b4.datepicker(form("dateStart"), 'value -> "15-11-2018", '_help -> "検索期間を入力してください。")(form("dateEnd"), 'value -> "31-12-2018")('_label -> "検索年月")
+                        @b4.text(form("keyword"), '_label -> "キーワード",
+                            'placeholder -> "検索キーワードを入力してください。",
+                            '_help -> "検索キーワードが複数ある場合は、カンマで区切って入力してください。")
+
+                        @b4.multiCheckbox(
+                            (form("male"), Seq('_text -> "男性")),
+                            (form("female"), Seq('_text -> "女性")),
+                            (form("company"), Seq('_text -> "法人"))
+                        )('_label -> "性別", 'class -> "multi-checkbox-list inline", '_help -> "性別区分を入力してください。")
+
+                        @b4.select(form("age"), options = ages, '_label -> "年代", '_help -> "年代を選択してください。'---'を選択した場合は全ての応対コードが対象になります。")
+                        @b4.select(form("receptionCode"), options = fruits, '_label -> "応対コード", '_help -> "応対コードを選択してください。'---'を選択した場合は全ての応対コードが対象になります。")
+                        @b4.select(form("model"), options = fruits, '_label -> "機種情報", '_help -> "機種情報を選択してください。'---'を選択した場合は全ての機種情報が対象になります。")
+
+                        @b4.free('_id -> "idFormGroup") {
+
+                            <button type="submit" class="btn btn-sm btn-primary">検索サンプル確認</button>
+
+                            <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#executeModal" style="margin-right: 10px">
+                                検索依頼</button>
+
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#exampleModal1">
+                                名寄せ定義辞書</button>
+
+                            <button type="button" class="btn btn-sm btn-outline-success" data-toggle="modal" data-target="#exampleModal2">
+                                検索条件の保存</button>
+                            @*TODO モーダルダイアログは以下を確認して実装する。*@
+                            @*https://getbootstrap.com/docs/4.1/components/modal/*@
+                            <div class="modal fade" id="executeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">検索依頼確認ダイアログ</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>検索依頼を実行します。よろしいですか？</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+                                            <button type="button" class="btn btn-primary">検索依頼</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*TODO モーダルダイアログは以下を確認して実装する。*@
+                            @*https://getbootstrap.com/docs/4.1/components/modal/*@
+                            <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">名寄せ定義辞書更新・確認ダイアログ</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            @*保存フォーム*@
+                                            <form>
+                                                <div class="form-group">
+                                                    <label for="message-text" class="col-form-label">現在の辞書定義:</label>
+                                                    <textarea class="form-control" id="dictionary-content" rows=@dictionarySize >@dictionaryContent</textarea>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                                            <button type="button" class="btn btn-primary">更新して保存</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*TODO モーダルダイアログは以下を確認して実装する。*@
+                            @*https://getbootstrap.com/docs/4.1/components/modal/*@
+                            <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">検索条件保存ダイアログ</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            @*保存フォーム*@
+                                            <form>
+                                                <div class="form-group">
+                                                    <label for="recipient-name" class="col-form-label">案件名（保存名）:</label>
+                                                    <input type="text" class="form-control" id="recipient-name">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="message-text" class="col-form-label">検索条件:</label>
+                                                    <textarea class="form-control" id="message-text"></textarea>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                                            <button type="button" class="btn btn-primary">保存</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*<a href="@routes.HistorySearchController.download()" class="btn btn-sm btn-outline-primary"> @Messages("検索結果の保存")</a>*@
+                        }
+                    }
+                </div>
+            </div>
+
+
+            <div class="row">
+                <h3 id="inline-form" class="page-header" style="padding-top: 10px">検索結果サンプル取得一覧</h3>
+                <table class="table table-hover" style="font-size: 12px">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>@Messages("受付番号")</th>
+                            <th style="width: 90px">@Messages("受付日")</th>
+                            <th>@Messages("お客様申告")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @for(message <- messageSeq) {
+                        <tr>
+                            <td>@message.id.get</td>
+                            <td>@message.createdAt</td>
+                            <td>@message.body</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    }

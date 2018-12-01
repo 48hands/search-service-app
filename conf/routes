@@ -1,0 +1,21 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+
+# Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file                    controllers.Assets.at(path="/public", file)
+
+# 履歴検索系のルーティング定義
+GET         /                                controllers.HistorySearchController.index
+GET         /search                          controllers.HistorySearchController.index
+GET         /download                        controllers.HistorySearchController.download
+GET         /sbs_search                      controllers.HistorySearchController.sbsUploadShow
+POST        /sbs_upload_and_search           controllers.HistorySearchController.sbsUploadAndSearch
+GET         /search_condition_list           controllers.HistorySearchController.searchConditionList
+GET         /results                         controllers.HistorySearchController.getResults
+GET         /get_search_condition/:id        controllers.HistorySearchController.getSearchCondition(id: Long)
+
+# 適当なデータ生成用のルーティング定義
+GET         /fetch_dummies                   controllers.GenerateDataController.fetchReceptionHistory
+POST        /generate_dummies                controllers.GenerateDataController.insertReceptionHistory

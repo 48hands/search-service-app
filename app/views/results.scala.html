@@ -1,0 +1,41 @@
+@(messageSeq: Seq[SearchStatusRecord])(implicit messages: Messages, request: RequestHeader)
+
+
+@app(Messages("SearchResults")) {
+    <div class="container">
+        <div class="row">
+            <h3 id="inline-form" class="page-header" style="padding-top: 20px">@Messages("検索ステータス・結果確認")</h3>
+
+            <table class="table table-hover" style="font-size: 14px">
+                <thead class="thead-light">
+                    <tr>
+                        <th>検索依頼ID</th>
+                        <th>依頼日時</th>
+                        <th>ステータス</th>
+                        <th>結果ファイル</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for(message <- messageSeq) {
+                    <tr>
+                        <td>@message.requestId</td>
+                        <td>@message.requestedAt</td>
+                        <td>@message.status</td>
+                        <td>
+                            @if(message.status == "処理中") {
+                                <button href="@routes.HistorySearchController.download()" class="btn btn-sm btn-outline-primary" disabled>ファイルダウンロード</button>
+                            }
+                            @if(message.status == "完了") {
+                                <button href="@routes.HistorySearchController.download()" class="btn btn-sm btn-primary">ファイルダウンロード</button>
+                            }
+                        </td>
+
+
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+}
